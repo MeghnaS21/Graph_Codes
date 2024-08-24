@@ -54,50 +54,37 @@
 
 class Solution {
 private:
-    void bfs(int row, int col, vector<vector<int>> &visited, vector<vector<char>>& grid) {
-        visited[row][col] = 1;
-        queue<pair<int,int>> q;
-        q.push({row, col});
-
-        int n = grid.size();
-        int m = grid[0].size();
-
-        int delRow[] = {-1, 0, 1, 0};
-        int delCol[] = {0, 1, 0, -1};
-
-        while(!q.empty()) {
-            int row = q.front().first;
-            int col = q.front().second;
-            q.pop();
-
-            for(int i = 0; i < 4; i++) {
-                int nrow = row + delRow[i];
-                int ncol = col + delCol[i];
-
-                if(nrow >= 0 && nrow < n && ncol >= 0 && ncol < m && !visited[nrow][ncol] && grid[nrow][ncol] == '1') {
-                    visited[nrow][ncol] = 1;
-                    q.push({nrow, ncol});
-                }
+    void dfs(int startNode, vector<int> adjLs[], vector<int>& visited) {
+        visited[startNode] = 1;
+        for(auto neighbour : adjLs[startNode]) {
+            if(!visited[neighbour]) {
+                dfs(neighbour, adjLs, visited);
             }
         }
     }
 public:
-    int numIslands(vector<vector<char>>& grid) {
-        if (grid.empty()) return 0;
+    int findCircleNum(vector<vector<int>>& isConnected) {
+        int nodesCount = isConnected.size();
 
-        int n = grid.size(); // rows
-        int m = grid[0].size(); // columns
-
-        vector<vector<int>> visited(n, vector<int>(m, 0)); // create visited array
-        int cnt = 0;
-        for(int i = 0; i < n; i++) {
-            for(int j = 0; j < m; j++) {
-                if(!visited[i][j] && grid[i][j] == '1') {
-                    cnt++;
-                    bfs(i, j, visited, grid);
+        // converting matrix to adjacency list
+        vector<int> adjLs[nodesCount];
+        for(int i = 0; i < nodesCount; i++) {
+            for(int j = 0; j < nodesCount; j++) {
+                if(isConnected[i][j] == 1 && i != j) {
+                    adjLs[i].push_back(j);
+                    adjLs[j].push_back(i);
                 }
             }
         }
-        return cnt;
+
+        vector<int> visited(nodesCount, 0);
+        int count = 0;
+        for(int i = 0; i < nodesCount; i++) {
+            if(!visited[i]) {
+                count++;
+                dfs(i, adjLs, visited);
+            }
+        }
+        return count;
     }
 };
