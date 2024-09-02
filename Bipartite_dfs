@@ -1,0 +1,31 @@
+//We have to pass the color as well
+//DFS CALLS DO NOT HAVE QUEUE AND IT'S RELATED OPERATIONS. WE DIRECTLY TRAVERSE ON THE NEIGHBOURS AND CALL THE DFS RECURSIVELY!
+class Solution {
+private:
+    bool check(int start, int colo, vector<int>& color, vector<vector<int>>& graph) {
+        color[start] = colo;
+
+        for (auto neighbour : graph[start]) {
+            if (color[neighbour] == -1) {
+               if( check(neighbour, 1-colo, color, graph)==false) return false;
+            } else if (color[neighbour] == color[start])
+                return false;
+        }
+
+        return true;
+    }
+
+public:
+    bool isBipartite(vector<vector<int>>& graph) {
+        int n = graph.size();
+        vector<int> color(n, -1);
+        for (int i = 0; i < n; i++) {
+            if (color[i] == -1) {
+                
+                if (check(i, 0, color, graph ) == false)
+                    return false;
+            }
+        }
+        return true;
+    }
+};
